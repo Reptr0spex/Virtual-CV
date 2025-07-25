@@ -19,6 +19,7 @@ This is my interactive virtual CV designed using HTML, CSS, and JavaScript.
 ## 📂 How to Use
 1. Clone or download the repository.
 2. Open `index.html` in a browser.
+3. Open the 'Demo-VC.mp3' as a fail safe. 
 
 ## 📧 Contact
 Feel free to reach out via [LinkedIn](https://linkedin.com/in/reece-gorrah-8aa955333).
