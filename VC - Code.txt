@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reece Gorrah - Gamified CV</title>
+  <style>
+    :root {
+      --accent: #4a7264;
+      --bg: #1e1f22;
+      --text: #e0e0e0;
+      --section-bg: #2a2c2f;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .container {
+      max-width: 1100px;
+      max-height: 300px;
+      margin: 40px auto;
+      padding: 20px;
+      background-image: url('maxresdefault.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      position: relative;
+      text-align: left;
+      flex-wrap: wrap;
+      height: auto;
+      box-sizing: border-box;
+      overflow: hidden;
+      color: var(--text);
+    }
+    /* Dark overlay to improve text contrast */
+    .container .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5); /* adjust opacity as needed */
+      border-radius: 15px;
+      z-index: 1;
+      pointer-events: none; /* let clicks pass through */
+    }
+    .profile-img {
+      width: 200px;
+      height: 200px;
+      border-radius: 20px;
+      border: 4px solid var(--accent);
+      animation: popIn 1s ease forwards;
+      flex-shrink: 0;
+      object-fit: cover;
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .profile-info {
+      flex-grow: 1;
+      min-width: 250px;
+      position: relative;
+      z-index: 2;
+      color: var(--text);
+    }
+    .profile-info h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: var(--text);
+    }
+    .profile-info h3 {
+      margin: 5px 0 15px 0;
+      font-weight: normal;
+      color: var(--accent);
+    }
+    .level-tag {
+      font-size: 14px;
+      background: var(--accent);
+      color: #000;
+      padding: 3px 8px;
+      border-radius: 10px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .xp-bar {
+      background: #444;
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      overflow: hidden;
+      width: 80%;
+      max-width: 350px;
+      margin: 20px 0 10px 0;
+      height: 20px;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      z-index: 2;
+    }
+    .xp-fill {
+      height: 100%;
+      background-color: var(--accent);
+      text-align: right;
+      padding-right: 10px;
+      color: #000;
+      font-weight: bold;
+      width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    nav {
+      width: 100%;
+      margin-top: 30px;
+      text-align: center;
+      order: 99;
+      position: relative;
+      z-index: 2;
+    }
+    nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: var(--accent);
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 8px;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    nav a:hover {
+      background-color: var(--accent);
+      color: #000;
+    }
+    nav a.active {
+      background-color: #396a59;
+      color: #000;
+      font-weight: bolder;
+    }
+    .section-container {
+      max-width: 900px;
+      margin: 20px auto;
+      position: relative;
+      min-height: 200px;
+      overflow: hidden;
+    }
+    .section {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      background: #292b2e;
+      padding: 20px;
+      border-radius: 10px;
+      box-sizing: border-box;
+      color: var(--text);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .section.active {
+      opacity: 1;
+      pointer-events: auto;
+      position: relative;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    ul li::before {
+      content: '🕹️';
+      margin-right: 6px;
+      color: var(--accent);
+    }
+    a {
+      color: var(--accent);
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+    }
+  </style>
+  <script>
+    let currentSectionId = 'profile';
+    let animating = false;
+
+    function showSection(nextId) {
+      if (animating || nextId === currentSectionId) return;
+      animating = true;
+
+      const currentSection = document.getElementById(currentSectionId);
+      const nextSection = document.getElementById(nextId);
+
+      currentSection.style.opacity = '0';
+      currentSection.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        currentSection.classList.remove('active');
+        nextSection.classList.add('active');
+        nextSection.style.opacity = '0';
+        nextSection.style.pointerEvents = 'auto';
+
+        nextSection.offsetHeight;
+
+        nextSection.style.opacity = '1';
+
+        currentSectionId = nextId;
+        animating = false;
+
+        document.querySelectorAll('nav a').forEach(a => {
+          a.classList.toggle('active', a.getAttribute('onclick').includes(nextId));
+        });
+      }, 500);
+    }
+
+    window.onload = function () {
+      const initialSection = document.getElementById(currentSectionId);
+      initialSection.classList.add('active');
+      initialSection.style.opacity = '1';
+      initialSection.style.pointerEvents = 'auto';
+
+      document.querySelectorAll('nav a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('onclick').includes(currentSectionId));
+      });
+
+      const xpFill = document.querySelector('.xp-fill');
+      const animationDuration = 5000; // 5 seconds
+      let animationRunning = true;
+
+      let startTimestamp = null;
+      let elapsedWhenPaused = 0;
+
+      function animateProgress(timestamp) {
+        if (!timestamp) {
+          requestAnimationFrame(animateProgress);
+          return;
+        }
+
+        if (!animationRunning) {
+          if (startTimestamp !== null) {
+            elapsedWhenPaused += timestamp - startTimestamp;
+            startTimestamp = null;
+          }
+          requestAnimationFrame(animateProgress);
+          return;
+        }
+
+        if (startTimestamp === null) startTimestamp = timestamp;
+
+        const elapsed = elapsedWhenPaused + (timestamp - startTimestamp);
+        const progress = elapsed % animationDuration; // loop within duration
+        const percent = Math.floor((progress / animationDuration) * 100);
+
+        xpFill.style.width = percent + '%';
+        xpFill.textContent = percent + '%';
+
+        requestAnimationFrame(animateProgress);
+      }
+
+      animateProgress();
+
+      xpFill.addEventListener('click', () => {
+        if (animationRunning) {
+          animationRunning = false;
+          xpFill.style.animationPlayState = 'paused';
+        } else {
+          animationRunning = true;
+          xpFill.style.animationPlayState = 'running';
+        }
+      });
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="overlay"></div>
+    <img src="20241228_180319.jpg" alt="Reece Gorrah" class="profile-img" />
+    <div class="profile-info">
+      <h1>Reece Gorrah</h1>
+      <h3>Undergraduate IT Student</h3>
+
+      <div class="xp-bar" title="Click to pause/play progress">
+        <div class="xp-fill">0%</div>
+      </div>
+
+      <nav>
+        <a onclick="showSection('profile')" class="active">🧠 Profile</a>
+        <a onclick="showSection('education')">📘 Education</a>
+        <a onclick="showSection('skills')">⚙️ Skills</a>
+        <a onclick="showSection('certs')">🎓 Certificates</a>
+        <a onclick="showSection('reference')">📇 Reference</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div id="profile" class="section active">
+      <h2>Player Bio</h2>
+      <p>🎮 Aspiring Information Technology student with a passion for problemsolving, game development, and learning new technologies. I'm
+particularly interested in how creativity and logic intersect in fields
+like software engineering and game design. My love for gaming,
+especially as a casual League of Legends player, has shaped my
+thinking around teamwork, adaptability, and continuous selfimprovement. I'm eager to contribute to tech projects that challenge
+and grow my skillset.
+.</p>
+    </div>
+
+    <div id="education" class="section">
+      <h2>📘 Education</h2>
+      <p><strong>North-West University</strong><br />BSc in Information Technology<br />2023 – Present</p>
+    </div>
+
+    <div id="skills" class="section">
+      <h2>⚙️ Skills</h2>
+      <ul>
+        <li>C#, Java</li>
+        <li>HTML, CSS, Python</li>
+        <li>SQL, Unity, Unreal</li>
+        <li>Communication, Teamwork</li>
+        <li>Critical Thinking</li>
+      </ul>
+    </div>
+
+    <div id="certs" class="section">
+      <h2>🎓 Certificates</h2>
+      <ul>
+        <li>"Introduction to Cybersecurity" – Cisco, 2025</li>
+      </ul>
+    </div>
+
+    <div id="reference" class="section">
+      <h2>📇 Reference</h2>
+      <p>
+        <strong>Antonio Orange</strong><br />
+        ShopriteX<br />
+        📞 +27 67 025 2033<br />
+        ✉️ <a href="mailto:aorange@shoprite.co.za">aorange@shoprite.co.za</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="footer">🕹️ Crafted with XP by Reece Gorrah | Hosted on GitHub Pages</div>
+</body>
+</html>
